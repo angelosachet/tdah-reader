@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Uma "página" com uma única linha em destaque: foco em uma frase de cada vez. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M36,28h36a6,6 0,0 1,6 6v40a6,6 0,0 1,-6 6h-36a6,6 0,0 1,-6 -6v-40a6,6 0,0 1,6 -6z" />
+    <path
+        android:fillColor="#C5CAE9"
+        android:pathData="M39,39h26a2,2 0,0 1,0 4h-26a2,2 0,0 1,0 -4z" />
+    <path
+        android:fillColor="#FFB300"
+        android:pathData="M37,50h34a3,3 0,0 1,3 3v2a3,3 0,0 1,-3 3h-34a3,3 0,0 1,-3 -3v-2a3,3 0,0 1,3 -3z" />
+    <path
+        android:fillColor="#3949AB"
+        android:pathData="M40,53h28a1,1 0,0 1,0 2h-28a1,1 0,0 1,0 -2z" />
+    <path
+        android:fillColor="#C5CAE9"
+        android:pathData="M39,65h20a2,2 0,0 1,0 4h-20a2,2 0,0 1,0 -4z" />
+</vector>

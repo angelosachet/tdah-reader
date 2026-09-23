@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Frase a Frase</string>
+    <string name="untitled_book">Livro sem título</string>
+
+    <!-- Biblioteca -->
+    <string name="library_open_pdf">Abrir PDF</string>
+    <string name="library_empty_title">Sua estante está vazia</string>
+    <string name="library_empty_body">Abra um livro em PDF e ele será mostrado uma frase de cada vez, no seu ritmo, sem perder o lugar.</string>
+    <string name="library_continue">Continuar lendo</string>
+    <string name="library_other_books">Outros livros</string>
+    <string name="library_progress">%1$d%% · pág. %2$d de %3$d</string>
+    <string name="library_remove">Remover da estante</string>
+    <string name="library_remove_title">Remover livro?</string>
+    <string name="library_remove_body">"%1$s" sai da estante e o progresso é apagado. O arquivo PDF original não é alterado.</string>
+    <string name="library_remove_confirm">Remover</string>
+    <string name="library_about">Sobre</string>
+    <string name="library_settings">Aparência</string>
+    <string name="library_book_options">Opções do livro</string>
+    <string name="never_read">Ainda não começou</string>
+
+    <!-- Importação -->
+    <string name="import_title">Preparando o livro…</string>
+    <string name="import_reading_file">Lendo o arquivo…</string>
+    <string name="import_page">Página %1$d de %2$d</string>
+    <string name="import_hint">Isso só acontece na primeira vez. Depois o livro abre na hora.</string>
+    <string name="import_failed_title">Não deu para abrir</string>
+    <string name="error_password">Este PDF é protegido por senha e não pode ser aberto.</string>
+    <string name="error_no_text">Não encontrei texto neste PDF. Ele provavelmente é escaneado (feito só de imagens), e esse tipo ainda não é suportado.</string>
+    <string name="error_too_big">Este PDF é grande demais para a memória deste aparelho.</string>
+    <string name="error_cannot_open">Não foi possível acessar o arquivo. Tente abrir de novo pelo botão \"Abrir PDF\".</string>
+    <string name="error_invalid_pdf">Não foi possível ler este arquivo. Verifique se é um PDF válido.</string>
+    <string name="error_book_missing">Não encontrei o conteúdo deste livro. Abra o PDF novamente.</string>
+
+    <!-- Leitor -->
+    <string name="reader_back">Voltar para a estante</string>
+    <string name="reader_previous">Frase anterior</string>
+    <string name="reader_next">Próxima frase</string>
+    <string name="reader_play">Leitura automática</string>
+    <string name="reader_pause">Pausar leitura automática</string>
+    <string name="reader_settings">Ajustes de leitura</string>
+    <string name="reader_more">Mais opções</string>
+    <string name="reader_chapters">Capítulos</string>
+    <string name="reader_go_to_page">Ir para página</string>
+    <string name="reader_go_to_page_label">Página (1 a %1$d)</string>
+    <string name="reader_go">Ir</string>
+    <string name="reader_position">Pág. %1$d de %2$d · %3$d%%</string>
+    <string name="reader_finished_title">Você terminou o livro! 🎉</string>
+    <string name="reader_finished_body">Parabéns por ter chegado até o fim.</string>
+    <string name="reader_restart">Ler de novo desde o início</string>
+    <string name="reader_hint">Toque na direita (ou deslize para a esquerda) para avançar.\nToque na esquerda para voltar.</string>
+    <string name="reader_hint_ok">Entendi</string>
+    <string name="chapter_page">pág. %1$d</string>
+
+    <!-- Ajustes -->
+    <string name="settings_title">Ajustes de leitura</string>
+    <string name="settings_preview">Uma frase de cada vez. Sem pressa, sem se perder.</string>
+    <string name="settings_theme">Tema</string>
+    <string name="theme_system">Sistema</string>
+    <string name="theme_light">Claro</string>
+    <string name="theme_sepia">Sépia</string>
+    <string name="theme_dark">Escuro</string>
+    <string name="theme_black">Preto</string>
+    <string name="settings_font">Fonte</string>
+    <string name="font_lexend">Lexend</string>
+    <string name="font_atkinson">Atkinson</string>
+    <string name="font_sans">Sem serifa</string>
+    <string name="font_serif">Com serifa</string>
+    <string name="settings_font_size">Tamanho do texto: %1$d</string>
+    <string name="settings_line_spacing">Espaço entre linhas: %1$s</string>
+    <string name="settings_max_words">Máximo de palavras por tela: %1$d</string>
+    <string name="settings_max_words_hint">Frases mais longas são divididas nas vírgulas e pausas.</string>
+    <string name="settings_align">Alinhamento</string>
+    <string name="align_start">Esquerda</string>
+    <string name="align_center">Centro</string>
+    <string name="settings_show_previous">Mostrar frase anterior</string>
+    <string name="settings_show_previous_hint">Em cinza, acima da atual, para manter o fio da meada.</string>
+    <string name="settings_bionic">Leitura biônica</string>
+    <string name="settings_bionic_hint">Destaca o começo de cada palavra para guiar os olhos.</string>
+    <string name="settings_volume_keys">Virar com os botões de volume</string>
+    <string name="settings_volume_keys_hint">Volume − avança, volume + volta.</string>
+    <string name="settings_auto_speed">Leitura automática: %1$d palavras/min</string>
+    <string name="settings_auto_speed_hint">Toque em ▶ na leitura para as frases avançarem sozinhas.</string>
+
+    <!-- Sobre -->
+    <string name="about_title">Frase a Frase</string>
+    <string name="about_body">Versão %1$s\n\nLeitor de PDFs que mostra o livro uma frase de cada vez, pensado para quem tem TDAH e se perde em páginas cheias de texto.\n\nTudo é processado no próprio aparelho; nenhum arquivo é enviado para a internet.\n\nSoftware livre usado:\n• PdfBox-Android (Apache License 2.0)\n• Fontes Lexend e Atkinson Hyperlegible (SIL Open Font License 1.1)\n• Jetpack Compose e bibliotecas AndroidX (Apache License 2.0)</string>
+    <string name="close">Fechar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="ok">OK</string>
+</resources>
