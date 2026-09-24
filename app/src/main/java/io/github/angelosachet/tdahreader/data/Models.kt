@@ -23,12 +23,14 @@ data class BookEntry(
 /** Texto já processado do livro, guardado em disco para abrir instantaneamente. */
 @Serializable
 data class BookContent(
-    val formatVersion: Int = FORMAT_VERSION,
+    /** Versão do processamento que gerou este texto (arquivos antigos não têm o campo = 1). */
+    val formatVersion: Int = 1,
     val pageCount: Int,
     val paragraphs: List<Paragraph>,
     val outline: List<OutlineEntry> = emptyList(),
 ) {
     companion object {
-        const val FORMAT_VERSION = 1
+        /** 2: ligaduras como "Th" e "ffi" passaram a ser recuperadas. */
+        const val FORMAT_VERSION = 2
     }
 }

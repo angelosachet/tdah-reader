@@ -91,6 +91,7 @@ class LibraryRepository(context: Context, private val scope: CoroutineScope) {
     }
 
     suspend fun saveContent(id: String, content: BookContent) = withContext(Dispatchers.IO) {
+        if (cachedContent?.first == id) cachedContent = null
         writeAtomically(contentFile(id), json.encodeToString(BookContent.serializer(), content))
         cachedContent = id to content
     }

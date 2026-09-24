@@ -3,11 +3,18 @@ package io.github.angelosachet.tdahreader.pdf
 import com.tom_roush.pdfbox.io.MemoryUsageSetting
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.pdmodel.PDPage
+import com.tom_roush.pdfbox.pdmodel.font.PDCIDFontType0
+import com.tom_roush.pdfbox.pdmodel.font.PDCIDFontType2
 import com.tom_roush.pdfbox.pdmodel.font.PDFont
+import com.tom_roush.pdfbox.pdmodel.font.PDSimpleFont
+import com.tom_roush.pdfbox.pdmodel.font.PDTrueTypeFont
+import com.tom_roush.pdfbox.pdmodel.font.PDType0Font
+import com.tom_roush.pdfbox.pdmodel.font.encoding.GlyphList
 import com.tom_roush.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineNode
 import com.tom_roush.pdfbox.text.PDFTextStripper
 import com.tom_roush.pdfbox.text.TextPosition
 import io.github.angelosachet.tdahreader.text.Glyph
+import io.github.angelosachet.tdahreader.text.GlyphRepair
 import io.github.angelosachet.tdahreader.text.LineAssembler
 import io.github.angelosachet.tdahreader.text.OutlineEntry
 import io.github.angelosachet.tdahreader.text.PageText
@@ -78,6 +85,7 @@ object PdfTextExtractor {
     ) : PDFTextStripper() {
         private val assembler = LineAssembler()
         private val boldFonts = IdentityHashMap<PDFont, Boolean>()
+        private val glyphNameCache = HashMap<Pair<PDFont, Int>, String>()
         private var pageIndex = 0
         private var width = 0f
         private var height = 0f
@@ -99,16 +107,59 @@ object PdfTextExtractor {
         }
 
         override fun writeString(text: String, textPositions: MutableList<TextPosition>) {
-            assembler.addWord(text, textPositions.map { tp ->
+            var repaired = false
+            val glyphs = textPositions.map { tp ->
+                val raw = tp.unicode ?: ""
+                val unicode = if (raw.isEmpty() || raw.any(GlyphRepair::isSuspicious)) {
+                    recoverFromGlyphName(tp)?.also { repaired = true } ?: raw
+                } else {
+                    raw
+                }
                 Glyph(
-                    text = tp.unicode ?: "",
+                    text = unicode,
                     x = tp.xDirAdj,
                     baseline = tp.yDirAdj,
                     width = tp.widthDirAdj,
                     fontSize = tp.fontSizeInPt,
                     bold = isBold(tp.font),
                 )
-            })
+            }
+            val wordText = if (repaired) LineAssembler.normalizeLigatures(glyphs.joinToString("") { it.text }) else text
+            assembler.addWord(wordText, glyphs)
+        }
+
+        /**
+         * Ligaduras sem Unicode ("T_h", "f_f_i") chegam como símbolos: tenta descobrir
+         * o texto pelo nome do glifo dentro da própria fonte.
+         */
+        private fun recoverFromGlyphName(tp: TextPosition): String? {
+            val code = tp.characterCodes?.singleOrNull() ?: return null
+            val font = tp.font ?: return null
+            val key = font to code
+            glyphNameCache[key]?.let { return it.ifEmpty { null } }
+            val name = runCatching { glyphName(font, code) }.getOrNull()
+            val decoded = GlyphRepair.decodeGlyphName(name) { GlyphList.getAdobeGlyphList().toUnicode(it) }
+            glyphNameCache[key] = decoded ?: ""
+            return decoded
+        }
+
+        private fun glyphName(font: PDFont, code: Int): String? {
+            if (font is PDSimpleFont) {
+                val name = font.encoding?.getName(code)
+                if (name != null && name != ".notdef") return name
+                if (font is PDTrueTypeFont) return font.trueTypeFont?.postScript?.getName(font.codeToGID(code))
+                return null
+            }
+            if (font is PDType0Font) {
+                return when (val cid = font.descendantFont) {
+                    is PDCIDFontType2 -> cid.trueTypeFont?.postScript?.getName(cid.codeToGID(code))
+                    is PDCIDFontType0 -> cid.cffFont?.charset?.let { charset ->
+                        if (charset.isCIDFont) null else charset.getNameForGID(cid.codeToGID(code))
+                    }
+                    else -> null
+                }
+            }
+            return null
         }
 
         override fun writeWordSeparator() = Unit

@@ -73,11 +73,10 @@ class BookImporter(
     private suspend fun importInternal(uri: Uri, name: String?, tmp: File): String {
         val id = copyAndHash(uri, tmp)
         val now = System.currentTimeMillis()
-        library.book(id)?.let { existing ->
-            if (library.hasContent(id)) {
-                library.upsert(existing.copy(lastReadAt = now))
-                return id
-            }
+        val existing = library.book(id)
+        if (existing != null && library.loadContent(id)?.formatVersion == BookContent.FORMAT_VERSION) {
+            library.upsert(existing.copy(lastReadAt = now))
+            return id
         }
 
         val context = coroutineContext
@@ -92,16 +91,23 @@ class BookImporter(
             throw NoTextException()
         }
 
-        val content = BookContent(pageCount = extracted.pageCount, paragraphs = paragraphs, outline = extracted.outline)
+        val content = BookContent(
+            formatVersion = BookContent.FORMAT_VERSION,
+            pageCount = extracted.pageCount,
+            paragraphs = paragraphs,
+            outline = extracted.outline,
+        )
         library.saveContent(id, content)
         library.upsert(
             BookEntry(
                 id = id,
-                title = chooseTitle(extracted.title, name),
-                author = extracted.author?.trim()?.takeIf { it.isNotEmpty() && it.length < 100 },
+                title = existing?.title ?: chooseTitle(extracted.title, name),
+                author = existing?.author ?: extracted.author?.trim()?.takeIf { it.isNotEmpty() && it.length < 100 },
                 pageCount = extracted.pageCount,
                 totalChars = totalChars,
-                addedAt = now,
+                // Reprocessando um livro já lido: mantém o progresso (posição proporcional).
+                position = existing?.let { (it.progress * totalChars).toInt() } ?: 0,
+                addedAt = existing?.addedAt ?: now,
                 lastReadAt = now,
             ),
         )

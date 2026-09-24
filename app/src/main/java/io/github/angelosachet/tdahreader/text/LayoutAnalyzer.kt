@@ -11,7 +11,7 @@ import kotlin.math.abs
 class LayoutAnalyzer {
 
     fun analyze(pages: List<PageText>): List<Paragraph> {
-        val cleaned = pages.map { page -> page.copy(lines = page.lines.mapNotNull(::cleanLine)) }
+        val cleaned = GlyphRepair.repair(pages).map { page -> page.copy(lines = page.lines.mapNotNull(::cleanLine)) }
         val bodySize = bodyFontSize(cleaned)
         val content = removeRunningHeaders(cleaned, bodySize).map { removeFootnotes(it, bodySize) }
         val vocabulary = HashSet<String>()
