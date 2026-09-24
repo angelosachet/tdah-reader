@@ -37,57 +37,68 @@ object GlyphRepair {
 
     /**
      * Para cada caractere suspeito que sobrou, testa ligaduras e letras e escolhe a que
-     * transforma mais ocorrências em palavras que aparecem no resto do livro.
+     * transforma mais palavras (distintas) em palavras que aparecem no resto do livro.
+     * Ligaduras têm preferência: "#e", "#ere" viram "The"/"There" e não "He"/"Here".
+     *
+     * @param dictionary palavras comuns (minúsculas) para quando o livro sempre usa a ligadura
+     * e a palavra nunca aparece escrita normalmente ("left", "after"). Só é carregado se preciso.
      */
-    fun repair(pages: List<PageText>): List<PageText> {
-        val suspicious = HashMap<Char, MutableList<Pair<String, Boolean>>>() // palavra, está no meio da frase
-        val vocabulary = HashMap<String, Int>()
+    fun repair(pages: List<PageText>, dictionary: () -> Set<String> = { emptySet() }): List<PageText> {
+        class Usage(var count: Int = 0, var wordStart: Int = 0, var midSentence: Int = 0)
+
+        val suspicious = HashMap<Char, HashMap<String, Usage>>()
+        val vocabulary = HashSet<String>()
         pages.forEach { page ->
             page.lines.forEach { line ->
                 var prevEnd = -1
                 WORD.findAll(line.text).forEach { m ->
                     val word = m.value
                     if (word.any(::isSuspicious)) {
-                        val midSentence = prevEnd >= 0 && line.text.substring(prevEnd, m.range.first).none { it in ".!?:—–\"“" }
+                        val mid = prevEnd >= 0 && line.text.substring(prevEnd, m.range.first).none { it in ".!?:—–\"“" }
                         word.filter(::isSuspicious).toSet().forEach { c ->
-                            val list = suspicious.getOrPut(c) { mutableListOf() }
-                            if (list.size < 400) list += word to midSentence
+                            val usage = suspicious.getOrPut(c) { HashMap() }.getOrPut(word) { Usage() }
+                            usage.count++
+                            if (word.first() == c) {
+                                usage.wordStart++
+                                if (mid) usage.midSentence++
+                            }
                         }
                     } else {
-                        vocabulary.merge(word.lowercase(), 1, Int::plus)
+                        vocabulary += word.lowercase()
                     }
                     prevEnd = m.range.last + 1
                 }
             }
         }
         if (suspicious.isEmpty()) return pages
+        val words = dictionary()
 
         val replacements = HashMap<Char, String>()
         suspicious.forEach { (c, samples) ->
-            var best: String? = null
-            var bestScore = 0
-            var second = 0
-            for (candidate in LIGATURES + LETTERS) {
-                val score = samples.count { (word, _) ->
-                    val fixed = word.replace(c.toString(), candidate).lowercase()
-                    fixed.none(::isSuspicious) && (vocabulary[fixed] ?: 0) > 0
-                }
-                if (score > bestScore) {
-                    second = bestScore; bestScore = score; best = candidate
-                } else if (score > second) {
-                    second = score
-                }
+            fun score(candidate: String) = samples.keys.count { word ->
+                val fixed = word.replace(c.toString(), candidate).lowercase()
+                fixed.none(::isSuspicious) && (fixed in vocabulary || fixed in words)
             }
-            val confident = best != null && bestScore >= 2 && bestScore >= samples.size * 0.4 && bestScore > second * 2
-            if (confident) {
-                var replacement = best!!
-                // "Th" (maiúsculo) quase nunca aparece no meio da frase.
-                val startsWords = samples.count { (w, _) -> w.startsWith(c) }
-                val mid = samples.count { (w, m) -> m && w.startsWith(c) }
-                if (startsWords > samples.size / 2 && mid < startsWords * 0.3) {
-                    replacement = replacement.replaceFirstChar { it.uppercaseChar() }
-                }
-                replacements[c] = replacement
+            fun confident(score: Int) = score >= 2 && score >= samples.size * 0.4
+
+            val ligature = LIGATURES.maxBy(::score)
+            val ligatureScore = score(ligature)
+            val letter = LETTERS.maxBy(::score)
+            val letterScore = score(letter)
+            val chosen = when {
+                confident(ligatureScore) && ligatureScore >= letterScore -> ligature
+                confident(letterScore) && letterScore > ligatureScore * 2 -> letter
+                else -> null
+            } ?: return@forEach
+
+            // "Th" (maiúsculo) quase nunca aparece no meio da frase.
+            val starts = samples.values.sumOf { it.wordStart }
+            val mid = samples.values.sumOf { it.midSentence }
+            val total = samples.values.sumOf { it.count }
+            replacements[c] = if (starts > total / 2 && mid < starts * 0.3) {
+                chosen.replaceFirstChar { it.uppercaseChar() }
+            } else {
+                chosen
             }
         }
         if (replacements.isEmpty()) return pages

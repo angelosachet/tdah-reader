@@ -89,7 +89,12 @@ TDAH_PDF_DIR=/pasta/com/pdfs ./gradlew testDebugUnitTest --tests '*RealPdfHarnes
 
 Isso gera, ao lado de cada PDF, arquivos `.paragraphs.txt`, `.chunks.txt` e `.outline.txt` para inspeção.
 
+### Ligaduras ("Th", "ff", "fi", "ft"...)
+
+Muitas fontes de livro desenham essas combinações como um único glifo. Quando o PDF não diz qual texto o glifo representa, ele aparece como símbolo. O app resolve em duas etapas: pelo nome do glifo na fonte (`T_h`, `f_f_i`) e, se não houver nome útil, testando as ligaduras possíveis e escolhendo a que forma palavras reais, usando o vocabulário do livro e as listas de palavras em `app/src/main/assets/words/`.
+
 ## Licenças de terceiros
 
 - [PdfBox-Android](https://github.com/TomRoush/PdfBox-Android): Apache License 2.0
+- Listas de palavras em `assets/words/`: geradas a partir de livros de domínio público do [Projeto Gutenberg](https://www.gutenberg.org)
 - Fontes [Lexend](https://www.lexend.com/) e [Atkinson Hyperlegible](https://www.brailleinstitute.org/freefont/): SIL Open Font License 1.1 (textos em `app/src/main/assets/licenses/`)

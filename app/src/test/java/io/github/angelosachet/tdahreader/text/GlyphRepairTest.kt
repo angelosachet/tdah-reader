@@ -42,6 +42,31 @@ class GlyphRepairTest {
     }
 
     @Test
+    fun `prefere ligadura quando uma letra tambem formaria palavras`() {
+        val th = '\uE062'
+        val ft = '\uE117'
+        val result = GlyphRepair.repair(listOf(page(
+            "${th}e scythe left. ${th}ere he was. ${th}ey knew. ${th}is is it. ${th}en he ran.",
+            "She gave a gi$ft and o${ft}en le$ft early. Here he was, then they left, this gift is often there.",
+            "The heir and the hose were there; the hen, the hat and the hey.",
+        )))
+        assertEquals(
+            "The scythe left. There he was. They knew. This is it. Then he ran.\n" +
+                "She gave a gift and often left early. Here he was, then they left, this gift is often there.",
+            result[0].lines.take(2).joinToString("\n") { it.text },
+        )
+    }
+
+    @Test
+    fun `usa o dicionario quando a palavra so aparece com ligadura`() {
+        val ft = '\uE09D'
+        val result = GlyphRepair.repair(
+            listOf(page("She le$ft a${ft}er lunch and o${ft}en came back in the a${ft}ernoon with a gi$ft.")),
+        ) { setOf("left", "after", "often", "afternoon", "gift") }
+        assertEquals("She left after lunch and often came back in the afternoon with a gift.", result[0].lines[0].text)
+    }
+
+    @Test
     fun `nao mexe quando nao ha evidencia`() {
         val odd = ''
         val pages = listOf(page("Um símbolo $odd isolado aqui."))

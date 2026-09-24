@@ -30,7 +30,7 @@ data class BookContent(
     val outline: List<OutlineEntry> = emptyList(),
 ) {
     companion object {
-        /** 2: ligaduras como "Th" e "ffi" passaram a ser recuperadas. */
-        const val FORMAT_VERSION = 2
+        /** 2: ligaduras como "Th" e "ffi" recuperadas; 3: também com ajuda de um dicionário. */
+        const val FORMAT_VERSION = 3
     }
 }

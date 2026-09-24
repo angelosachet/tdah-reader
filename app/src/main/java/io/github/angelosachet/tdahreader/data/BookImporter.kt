@@ -84,7 +84,7 @@ class BookImporter(
             context.ensureActive()
             _state.value = ImportState.Working(name, page + 1, total)
         }
-        val paragraphs = withContext(Dispatchers.Default) { LayoutAnalyzer().analyze(extracted.pages) }
+        val paragraphs = withContext(Dispatchers.Default) { LayoutAnalyzer(::commonWords).analyze(extracted.pages) }
         val totalChars = paragraphs.sumOf { it.text.length + 1 }
         val letters = paragraphs.sumOf { p -> p.text.count { it.isLetter() } }
         if (letters < 200 || (extracted.pageCount > 5 && letters < extracted.pageCount * 30)) {
@@ -112,6 +112,17 @@ class BookImporter(
             ),
         )
         return id
+    }
+
+    /** Palavras comuns em inglês e português (assets/words), para reconhecer ligaduras. */
+    private fun commonWords(): Set<String> {
+        val words = HashSet<String>(100_000)
+        for (file in listOf("words/en.txt", "words/pt.txt")) {
+            runCatching {
+                context.assets.open(file).bufferedReader().useLines { lines -> lines.forEach { if (it.isNotBlank()) words += it } }
+            }
+        }
+        return words
     }
 
     private suspend fun copyAndHash(uri: Uri, target: File): String {

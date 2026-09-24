@@ -27,7 +27,9 @@ class RealPdfHarnessTest {
                     }
                 }
             }
-            val paragraphs = LayoutAnalyzer().analyze(extracted.pages)
+            val paragraphs = LayoutAnalyzer {
+                listOf("en.txt", "pt.txt").flatMap { File("src/main/assets/words/$it").readLines() }.toSet()
+            }.analyze(extracted.pages)
             val chunks = Chunker(20).chunk(paragraphs)
             val t2 = System.nanoTime()
             File(dir, pdf.nameWithoutExtension + ".paragraphs.txt").printWriter().use { out ->

@@ -8,10 +8,10 @@ import kotlin.math.abs
  * remove cabeçalhos, rodapés, números de página e notas de rodapé,
  * une linhas quebradas e desfaz a hifenização.
  */
-class LayoutAnalyzer {
+class LayoutAnalyzer(private val dictionary: () -> Set<String> = { emptySet() }) {
 
     fun analyze(pages: List<PageText>): List<Paragraph> {
-        val cleaned = GlyphRepair.repair(pages).map { page -> page.copy(lines = page.lines.mapNotNull(::cleanLine)) }
+        val cleaned = GlyphRepair.repair(pages, dictionary).map { page -> page.copy(lines = page.lines.mapNotNull(::cleanLine)) }
         val bodySize = bodyFontSize(cleaned)
         val content = removeRunningHeaders(cleaned, bodySize).map { removeFootnotes(it, bodySize) }
         val vocabulary = HashSet<String>()
