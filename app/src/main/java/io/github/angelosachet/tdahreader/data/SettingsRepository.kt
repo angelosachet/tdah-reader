@@ -8,8 +8,12 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 enum class ThemeMode { SYSTEM, LIGHT, SEPIA, DARK, BLACK }
 enum class ReaderFont { LEXEND, ATKINSON, SANS, SERIF }
@@ -42,7 +46,7 @@ data class ReaderSettings(
 
 private val Context.dataStore by preferencesDataStore(name = "settings")
 
-class SettingsRepository(private val context: Context) {
+class SettingsRepository(private val context: Context, scope: CoroutineScope) {
 
     private object Keys {
         val theme = stringPreferencesKey("theme")
@@ -59,6 +63,9 @@ class SettingsRepository(private val context: Context) {
     }
 
     val settings: Flow<ReaderSettings> = context.dataStore.data.map { it.toSettings() }
+
+    /** Últimas preferências lidas; null só até a primeira leitura do disco, então a tela não fica vazia ao ser recriada. */
+    val current: StateFlow<ReaderSettings?> = settings.stateIn(scope, SharingStarted.Eagerly, null)
 
     suspend fun update(transform: (ReaderSettings) -> ReaderSettings) {
         context.dataStore.edit { prefs ->

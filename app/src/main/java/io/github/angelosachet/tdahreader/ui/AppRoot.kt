@@ -35,7 +35,7 @@ data class ReaderRoute(val bookId: String)
 
 @Composable
 fun AppRoot(container: AppContainer) {
-    val settings by container.settings.settings.collectAsStateWithLifecycle(initialValue = null)
+    val settings by container.settings.current.collectAsStateWithLifecycle()
     val current = settings ?: return // espera as preferências para não piscar o tema errado
     val scope = rememberCoroutineScope()
     val update: ((ReaderSettings) -> ReaderSettings) -> Unit = { t -> scope.launch { container.settings.update(t) } }

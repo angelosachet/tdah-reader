@@ -13,7 +13,7 @@ import kotlinx.coroutines.SupervisorJob
 class AppContainer(context: Context) {
     val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     val library = LibraryRepository(context, appScope)
-    val settings = SettingsRepository(context)
+    val settings = SettingsRepository(context, appScope)
     val importer = BookImporter(context, library, appScope)
     val keys = HardwareKeyRouter()
 }
