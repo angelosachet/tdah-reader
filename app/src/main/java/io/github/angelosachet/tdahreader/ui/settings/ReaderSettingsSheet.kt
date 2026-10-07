@@ -156,6 +156,9 @@ fun ReaderSettingsSheet(
                 steps = 0,
                 onChange = { v -> onUpdate { it.copy(autoWpm = (v / 10).roundToInt() * 10) } },
             )
+            SwitchSetting(R.string.settings_celebrations, R.string.settings_celebrations_hint, settings.celebrations) { v ->
+                onUpdate { it.copy(celebrations = v) }
+            }
         }
     }
 }

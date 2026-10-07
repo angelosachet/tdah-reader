@@ -19,6 +19,18 @@ Você abre o PDF, o app extrai e limpa o texto, e o livro passa a ser lido frase
 - O ponto de leitura é salvo automaticamente. Ao abrir o livro de novo, você continua de onde parou.
 - **⋮ → Capítulos**: lista os capítulos (pelo sumário do PDF ou pelos títulos detectados). **⋮ → Ir para página**: pula para uma página do PDF original.
 - **▶ Leitura automática**: as frases avançam sozinhas na velocidade escolhida.
+- **Capas**: cada livro aparece na estante com a capa (a primeira página do PDF). Livros sem capa ganham uma capa ilustrada; em *⋮ → Trocar capa* dá para escolher uma imagem da galeria.
+
+### Progresso e conquistas
+
+Ler vira um joguinho, para dar vontade de voltar no dia seguinte:
+
+- **XP e níveis**: cada palavra lida vale 1 XP. Terminar um capítulo (+50), bater a meta do dia (+100) e terminar um livro (+500) dão bônus. Os níveis têm títulos, de *Primeiras páginas* a *Lenda da leitura*.
+- **Meta diária e sequência 🔥**: escolha quantas frases ler por dia (15 a 200). Cada dia com a meta batida aumenta a sequência; o anel na barra da leitura mostra quanto falta hoje.
+- **Conquistas**: 17 medalhas, como *Mil frases*, *Semana em chamas*, *Foco total* (15 minutos sem sair do livro) e *Coruja* (ler depois da meia-noite).
+- **Seu progresso** (ícone de troféu na estante): nível, gráfico da semana, totais (frases, palavras, tempo de leitura, livros terminados) e todas as conquistas.
+- Só conta o que foi lido avançando: voltar e reler, ou passar frases rápido demais, não soma pontos.
+- Avisos e confete podem ser desligados em *Ajustes → Comemorações e conquistas* (o progresso continua sendo contado).
 
 ### Ajustes (ícone **Tт**)
 

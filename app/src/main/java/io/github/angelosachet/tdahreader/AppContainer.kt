@@ -5,6 +5,7 @@ import android.view.KeyEvent
 import io.github.angelosachet.tdahreader.data.BookImporter
 import io.github.angelosachet.tdahreader.data.LibraryRepository
 import io.github.angelosachet.tdahreader.data.SettingsRepository
+import io.github.angelosachet.tdahreader.data.StatsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -14,6 +15,7 @@ class AppContainer(context: Context) {
     val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     val library = LibraryRepository(context, appScope)
     val settings = SettingsRepository(context, appScope)
+    val stats = StatsRepository(context, appScope)
     val importer = BookImporter(context, library, appScope)
     val keys = HardwareKeyRouter()
 }

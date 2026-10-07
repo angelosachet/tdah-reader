@@ -33,6 +33,10 @@ data class ReaderSettings(
     /** Velocidade da leitura automática, em palavras por minuto. */
     val autoWpm: Int = 160,
     val hintSeen: Boolean = false,
+    /** Frases por dia para bater a meta e manter a sequência. */
+    val dailyGoal: Int = 30,
+    /** Mostrar avisos e confete ao bater metas e desbloquear conquistas. */
+    val celebrations: Boolean = true,
 ) {
     companion object {
         const val MIN_FONT = 16
@@ -41,6 +45,9 @@ data class ReaderSettings(
         const val MAX_WORDS = 40
         const val MIN_WPM = 60
         const val MAX_WPM = 400
+        const val MIN_GOAL = 5
+        const val MAX_GOAL = 500
+        val GOAL_OPTIONS = listOf(15, 30, 50, 100, 200)
     }
 }
 
@@ -60,6 +67,8 @@ class SettingsRepository(private val context: Context, scope: CoroutineScope) {
         val volumeKeys = booleanPreferencesKey("volume_keys")
         val autoWpm = intPreferencesKey("auto_wpm")
         val hintSeen = booleanPreferencesKey("hint_seen")
+        val dailyGoal = intPreferencesKey("daily_goal")
+        val celebrations = booleanPreferencesKey("celebrations")
     }
 
     val settings: Flow<ReaderSettings> = context.dataStore.data.map { it.toSettings() }
@@ -81,6 +90,8 @@ class SettingsRepository(private val context: Context, scope: CoroutineScope) {
             prefs[Keys.volumeKeys] = s.volumeKeys
             prefs[Keys.autoWpm] = s.autoWpm
             prefs[Keys.hintSeen] = s.hintSeen
+            prefs[Keys.dailyGoal] = s.dailyGoal
+            prefs[Keys.celebrations] = s.celebrations
         }
     }
 
@@ -98,6 +109,8 @@ class SettingsRepository(private val context: Context, scope: CoroutineScope) {
             volumeKeys = this[Keys.volumeKeys] ?: d.volumeKeys,
             autoWpm = (this[Keys.autoWpm] ?: d.autoWpm).coerceIn(ReaderSettings.MIN_WPM, ReaderSettings.MAX_WPM),
             hintSeen = this[Keys.hintSeen] ?: d.hintSeen,
+            dailyGoal = (this[Keys.dailyGoal] ?: d.dailyGoal).coerceIn(ReaderSettings.MIN_GOAL, ReaderSettings.MAX_GOAL),
+            celebrations = this[Keys.celebrations] ?: d.celebrations,
         )
     }
 

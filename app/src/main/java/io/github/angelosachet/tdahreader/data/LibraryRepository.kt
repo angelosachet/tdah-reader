@@ -1,6 +1,9 @@
 package io.github.angelosachet.tdahreader.data
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.LruCache
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -17,13 +20,15 @@ import kotlinx.serialization.json.Json
 import java.io.File
 
 /**
- * Guarda a lista de livros (library.json) e o texto processado de cada um (books/<id>.json).
+ * Guarda a lista de livros (library.json), o texto processado de cada um (books/<id>.json)
+ * e as capas (covers/<id>.jpg).
  */
 class LibraryRepository(context: Context, private val scope: CoroutineScope) {
 
     private val dir = context.filesDir
     private val libraryFile = File(dir, "library.json")
     private val booksDir = File(dir, "books").apply { mkdirs() }
+    private val coversDir = File(dir, "covers").apply { mkdirs() }
     private val json = Json { ignoreUnknownKeys = true }
     private val writeLock = Mutex()
     private var pendingSave: Job? = null
@@ -36,6 +41,14 @@ class LibraryRepository(context: Context, private val scope: CoroutineScope) {
 
     @Volatile
     private var cachedContent: Pair<String, BookContent>? = null
+
+    private val coverCache = object : LruCache<String, Bitmap>(16 * 1024 * 1024) {
+        override fun sizeOf(key: String, value: Bitmap) = value.byteCount
+    }
+
+    /** Muda sempre que uma capa é salva ou apagada, para as telas recarregarem. */
+    private val _coverRevision = MutableStateFlow(0)
+    val coverRevision: StateFlow<Int> = _coverRevision.asStateFlow()
 
     init {
         scope.launch(Dispatchers.IO) {
@@ -59,7 +72,11 @@ class LibraryRepository(context: Context, private val scope: CoroutineScope) {
     suspend fun remove(id: String) {
         _books.update { list -> list.filterNot { it.id == id } }
         if (cachedContent?.first == id) cachedContent = null
-        withContext(Dispatchers.IO) { contentFile(id).delete() }
+        withContext(Dispatchers.IO) {
+            contentFile(id).delete()
+            coverFile(id).delete()
+        }
+        coverCache.remove(id)
         saveLibrary()
     }
 
@@ -96,6 +113,40 @@ class LibraryRepository(context: Context, private val scope: CoroutineScope) {
         cachedContent = id to content
     }
 
+    fun hasCover(id: String): Boolean = coverFile(id).exists()
+
+    fun cachedCover(id: String): Bitmap? = coverCache.get(id)
+
+    suspend fun loadCover(id: String): Bitmap? {
+        coverCache.get(id)?.let { return it }
+        return withContext(Dispatchers.IO) {
+            val file = coverFile(id)
+            if (!file.exists()) return@withContext null
+            runCatching { BitmapFactory.decodeFile(file.path) }.getOrNull()?.also { coverCache.put(id, it) }
+        }
+    }
+
+    suspend fun saveCover(id: String, bitmap: Bitmap) {
+        withContext(Dispatchers.IO) {
+            val target = coverFile(id)
+            val tmp = File(coversDir, target.name + ".tmp")
+            tmp.outputStream().use { bitmap.compress(Bitmap.CompressFormat.JPEG, 88, it) }
+            if (!tmp.renameTo(target)) {
+                target.delete()
+                tmp.renameTo(target)
+            }
+        }
+        coverCache.put(id, bitmap)
+        _coverRevision.update { it + 1 }
+    }
+
+    /** Volta para a capa ilustrada gerada pelo app. */
+    suspend fun removeCover(id: String) {
+        withContext(Dispatchers.IO) { coverFile(id).delete() }
+        coverCache.remove(id)
+        _coverRevision.update { it + 1 }
+    }
+
     private suspend fun saveLibrary() = withContext(Dispatchers.IO) {
         writeLock.withLock {
             writeAtomically(libraryFile, json.encodeToString(_books.value))
@@ -103,6 +154,8 @@ class LibraryRepository(context: Context, private val scope: CoroutineScope) {
     }
 
     private fun contentFile(id: String) = File(booksDir, "$id.json")
+
+    private fun coverFile(id: String) = File(coversDir, "$id.jpg")
 
     private fun writeAtomically(target: File, text: String) {
         val tmp = File(target.parentFile, target.name + ".tmp")

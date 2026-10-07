@@ -43,6 +43,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
@@ -100,6 +101,8 @@ import io.github.angelosachet.tdahreader.R
 import io.github.angelosachet.tdahreader.data.ReaderAlign
 import io.github.angelosachet.tdahreader.data.ReaderSettings
 import io.github.angelosachet.tdahreader.text.Chunk
+import io.github.angelosachet.tdahreader.ui.game.Confetti
+import io.github.angelosachet.tdahreader.ui.game.DailyGoalRing
 import io.github.angelosachet.tdahreader.ui.settings.ReaderSettingsSheet
 import io.github.angelosachet.tdahreader.ui.theme.LocalReaderPalette
 import io.github.angelosachet.tdahreader.ui.theme.family
@@ -113,7 +116,9 @@ fun ReaderScreen(
     state: ReaderState,
     settings: ReaderSettings,
     keys: HardwareKeyRouter,
+    todaySentences: Int,
     onUpdateSettings: ((ReaderSettings) -> ReaderSettings) -> Unit,
+    onOpenStats: () -> Unit,
     onBack: () -> Unit,
 ) {
     val palette = LocalReaderPalette.current
@@ -177,6 +182,11 @@ fun ReaderScreen(
                     )
                 }
             }
+            DailyGoalRing(
+                done = todaySentences,
+                goal = settings.dailyGoal,
+                onClick = { viewModel.pauseAuto(); onOpenStats() },
+            )
             IconButton(onClick = { viewModel.pauseAuto(); showSettings = true }) {
                 Icon(Icons.Filled.TextFields, stringResource(R.string.reader_settings), tint = palette.secondaryText)
             }
@@ -210,7 +220,11 @@ fun ReaderScreen(
         ) {
             when {
                 state.loading -> CircularProgressIndicator(Modifier.align(Alignment.Center), color = palette.accent)
-                state.finished -> FinishedView(onRestart = { forward = false; viewModel.restart() })
+                state.finished -> FinishedView(
+                    celebrate = settings.celebrations,
+                    onRestart = { forward = false; viewModel.restart() },
+                    onOpenStats = onOpenStats,
+                )
                 else -> {
                     AnimatedContent(
                         targetState = state.index,
@@ -360,28 +374,35 @@ private fun ChunkView(current: Chunk?, previous: Chunk?, settings: ReaderSetting
 }
 
 @Composable
-private fun FinishedView(onRestart: () -> Unit) {
+private fun FinishedView(celebrate: Boolean, onRestart: () -> Unit, onOpenStats: () -> Unit) {
     val palette = LocalReaderPalette.current
-    Column(
-        Modifier.fillMaxSize().padding(32.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(
-            stringResource(R.string.reader_finished_title),
-            style = MaterialTheme.typography.headlineSmall,
-            color = palette.text,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(Modifier.height(8.dp))
-        Text(
-            stringResource(R.string.reader_finished_body),
-            style = MaterialTheme.typography.bodyLarge,
-            color = palette.secondaryText,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(Modifier.height(24.dp))
-        Button(onClick = onRestart) { Text(stringResource(R.string.reader_restart)) }
+    Box(Modifier.fillMaxSize()) {
+        if (celebrate) Confetti(trigger = "finished", durationMillis = 3_200)
+        Column(
+            Modifier.fillMaxSize().padding(32.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Icon(Icons.Filled.EmojiEvents, null, Modifier.size(72.dp), tint = palette.accent)
+            Spacer(Modifier.height(16.dp))
+            Text(
+                stringResource(R.string.reader_finished_title),
+                style = MaterialTheme.typography.headlineSmall,
+                color = palette.text,
+                textAlign = TextAlign.Center,
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                stringResource(R.string.reader_finished_body),
+                style = MaterialTheme.typography.bodyLarge,
+                color = palette.secondaryText,
+                textAlign = TextAlign.Center,
+            )
+            Spacer(Modifier.height(24.dp))
+            Button(onClick = onOpenStats) { Text(stringResource(R.string.reader_see_progress)) }
+            Spacer(Modifier.height(8.dp))
+            TextButton(onClick = onRestart) { Text(stringResource(R.string.reader_restart)) }
+        }
     }
 }
 

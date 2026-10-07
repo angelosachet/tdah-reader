@@ -29,6 +29,7 @@ class MainActivity : ComponentActivity() {
     override fun onStop() {
         super.onStop()
         container.library.flush()
+        container.stats.flush()
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean =

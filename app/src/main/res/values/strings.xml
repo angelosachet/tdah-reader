@@ -18,6 +18,13 @@
     <string name="library_settings">Aparência</string>
     <string name="library_book_options">Opções do livro</string>
     <string name="never_read">Ainda não começou</string>
+    <string name="library_progress_button">Seu progresso</string>
+    <string name="library_progress_short">%1$d%% lido</string>
+    <string name="library_resume">Continuar</string>
+    <string name="library_start">Começar</string>
+    <string name="library_finished">Livro terminado</string>
+    <string name="library_change_cover">Trocar capa</string>
+    <string name="library_reset_cover">Usar capa ilustrada</string>
 
     <!-- Importação -->
     <string name="import_title">Preparando o livro…</string>
@@ -48,6 +55,7 @@
     <string name="reader_finished_title">Você terminou o livro! 🎉</string>
     <string name="reader_finished_body">Parabéns por ter chegado até o fim.</string>
     <string name="reader_restart">Ler de novo desde o início</string>
+    <string name="reader_see_progress">Ver meu progresso</string>
     <string name="reader_hint">Toque na direita (ou deslize para a esquerda) para avançar.\nToque na esquerda para voltar.</string>
     <string name="reader_hint_ok">Entendi</string>
     <string name="chapter_page">pág. %1$d</string>
@@ -81,6 +89,103 @@
     <string name="settings_volume_keys_hint">Volume − avança, volume + volta.</string>
     <string name="settings_auto_speed">Leitura automática: %1$d palavras/min</string>
     <string name="settings_auto_speed_hint">Toque em ▶ na leitura para as frases avançarem sozinhas.</string>
+    <string name="settings_celebrations">Comemorações e conquistas</string>
+    <string name="settings_celebrations_hint">Avisos e confete ao bater a meta, subir de nível e desbloquear conquistas. O progresso continua sendo contado mesmo desligado.</string>
+
+    <!-- Gamificação -->
+    <string name="level_title">Nível %1$d · %2$s</string>
+    <string name="level_xp_to_next">%1$s / %2$s XP</string>
+    <plurals name="streak_days_short">
+        <item quantity="one">%d dia</item>
+        <item quantity="other">%d dias</item>
+    </plurals>
+    <string name="goal_today_done">Meta de hoje batida: %1$d frases ✓</string>
+    <string name="goal_today_progress">Meta de hoje: %1$d de %2$d frases</string>
+    <string name="goal_ring_description">Meta de hoje: %1$d de %2$d frases. Toque para ver seu progresso.</string>
+    <string name="duration_less_than_minute">menos de 1 min</string>
+    <string name="duration_minutes">%1$d min</string>
+    <string name="duration_hours">%1$d h %2$d min</string>
+    <string-array name="level_ranks">
+        <item>Primeiras páginas</item>
+        <item>Leitor curioso</item>
+        <item>Explorador de capítulos</item>
+        <item>Devorador de frases</item>
+        <item>Rato de biblioteca</item>
+        <item>Maratonista literário</item>
+        <item>Mestre das histórias</item>
+        <item>Lenda da leitura</item>
+    </string-array>
+
+    <string name="celebrate_goal">Meta do dia batida!</string>
+    <plurals name="celebrate_goal_streak">
+        <item quantity="one">🔥 %d dia seguido</item>
+        <item quantity="other">🔥 %d dias seguidos</item>
+    </plurals>
+    <string name="celebrate_level">Você subiu para o nível %1$d!</string>
+    <string name="celebrate_achievement">Conquista desbloqueada!</string>
+    <string name="celebrate_chapter">Capítulo concluído!</string>
+    <string name="celebrate_book">Livro terminado!</string>
+    <string name="celebrate_xp">+%1$d XP</string>
+
+    <string name="stats_title">Seu progresso</string>
+    <string name="back">Voltar</string>
+    <string name="stats_level">Nível %1$d</string>
+    <string name="stats_total_xp">%1$s XP no total</string>
+    <string name="stats_xp_missing">Faltam %1$s XP para o nível %2$d</string>
+    <string name="stats_xp_hint">Cada palavra lida vale 1 XP. Bater a meta do dia, terminar capítulos e livros dá bônus.</string>
+    <plurals name="stats_streak">
+        <item quantity="one">%d dia seguido</item>
+        <item quantity="other">%d dias seguidos</item>
+    </plurals>
+    <plurals name="stats_best_streak">
+        <item quantity="one">Recorde: %d dia</item>
+        <item quantity="other">Recorde: %d dias</item>
+    </plurals>
+    <string name="stats_today">Hoje</string>
+    <string name="stats_day_description">%1$s: %2$d frases</string>
+    <string name="stats_daily_goal">Meta diária</string>
+    <string name="stats_goal_option">%1$d frases</string>
+    <string name="stats_goal_hint">Bata a meta todo dia para manter a sequência 🔥. Comece pequeno: o importante é voltar amanhã.</string>
+    <string name="stats_total_sentences">frases lidas</string>
+    <string name="stats_total_words">palavras</string>
+    <string name="stats_total_time">de leitura</string>
+    <string name="stats_total_books">livros terminados</string>
+    <string name="stats_achievements">Conquistas (%1$d de %2$d)</string>
+
+    <string name="ach_first_sentence">Primeiro passo</string>
+    <string name="ach_first_sentence_desc">Leia sua primeira frase.</string>
+    <string name="ach_sentences_100">Embalado</string>
+    <string name="ach_sentences_100_desc">Leia 100 frases.</string>
+    <string name="ach_sentences_1000">Mil frases</string>
+    <string name="ach_sentences_1000_desc">Leia 1.000 frases.</string>
+    <string name="ach_sentences_10000">Incansável</string>
+    <string name="ach_sentences_10000_desc">Leia 10.000 frases.</string>
+    <string name="ach_words_100k">Cem mil palavras</string>
+    <string name="ach_words_100k_desc">Leia 100.000 palavras.</string>
+    <string name="ach_first_goal">Meta batida</string>
+    <string name="ach_first_goal_desc">Bata a meta do dia pela primeira vez.</string>
+    <string name="ach_streak_3">Pegando o ritmo</string>
+    <string name="ach_streak_3_desc">Bata a meta 3 dias seguidos.</string>
+    <string name="ach_streak_7">Semana em chamas</string>
+    <string name="ach_streak_7_desc">Bata a meta 7 dias seguidos.</string>
+    <string name="ach_streak_30">Hábito formado</string>
+    <string name="ach_streak_30_desc">Bata a meta 30 dias seguidos.</string>
+    <string name="ach_first_chapter">Fim de capítulo</string>
+    <string name="ach_first_chapter_desc">Termine um capítulo.</string>
+    <string name="ach_chapters_10">Virando páginas</string>
+    <string name="ach_chapters_10_desc">Termine 10 capítulos.</string>
+    <string name="ach_first_book">Livro concluído</string>
+    <string name="ach_first_book_desc">Leia um livro até o fim.</string>
+    <string name="ach_books_5">Estante de ouro</string>
+    <string name="ach_books_5_desc">Termine 5 livros.</string>
+    <string name="ach_focus_15">Foco total</string>
+    <string name="ach_focus_15_desc">Leia 15 minutos sem sair do livro.</string>
+    <string name="ach_night_owl">Coruja</string>
+    <string name="ach_night_owl_desc">Leia depois da meia-noite.</string>
+    <string name="ach_early_bird">Madrugador</string>
+    <string name="ach_early_bird_desc">Leia antes das 7 da manhã.</string>
+    <string name="ach_collector_3">Colecionador</string>
+    <string name="ach_collector_3_desc">Tenha 3 livros na estante.</string>
 
     <!-- Sobre -->
     <string name="about_title">Frase a Frase</string>

@@ -30,7 +30,7 @@ sealed interface ImportState {
 
 /**
  * Importa um PDF: copia para um arquivo temporário (calculando um hash que identifica o livro),
- * extrai e limpa o texto e guarda o resultado na biblioteca.
+ * extrai e limpa o texto, desenha a capa e guarda o resultado na biblioteca.
  */
 class BookImporter(
     private val context: Context,
@@ -75,6 +75,8 @@ class BookImporter(
         val now = System.currentTimeMillis()
         val existing = library.book(id)
         if (existing != null && library.loadContent(id)?.formatVersion == BookContent.FORMAT_VERSION) {
+            // Livros importados antes das capas ganham a sua ao reabrir o PDF.
+            ensureCover(id, tmp)
             library.upsert(existing.copy(lastReadAt = now))
             return id
         }
@@ -98,6 +100,7 @@ class BookImporter(
             outline = extracted.outline,
         )
         library.saveContent(id, content)
+        ensureCover(id, tmp)
         library.upsert(
             BookEntry(
                 id = id,
@@ -112,6 +115,12 @@ class BookImporter(
             ),
         )
         return id
+    }
+
+    /** Uma capa escolhida pela pessoa nunca é substituída. */
+    private suspend fun ensureCover(id: String, pdf: File) {
+        if (library.hasCover(id)) return
+        CoverRenderer.fromPdf(pdf)?.let { library.saveCover(id, it) }
     }
 
     /** Palavras comuns em inglês e português (assets/words), para reconhecer ligaduras. */
